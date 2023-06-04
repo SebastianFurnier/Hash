@@ -4,6 +4,9 @@ CC = gcc
 
 all: clean valgrind-alumno
 
+r: pruebas_chanutron
+	valgrind $(VALGRIND_FLAGS) ./pruebas_chanutron
+
 valgrind-chanutron: pruebas_chanutron
 	valgrind $(VALGRIND_FLAGS) ./pruebas_chanutron
 
