@@ -12,7 +12,7 @@ bool modificar_vector(const char* clave, void* valor, void* aux)
 
 void pruebas_rehash()
 {
-	size_t capacidad = 5;
+	size_t capacidad = 4;
 	hash_t* nuevo_hash = hash_crear(capacidad);
 
 	char* texto = "prueba";
@@ -31,7 +31,13 @@ void pruebas_rehash()
 	hash_insertar(nuevo_hash, texto3, &elemento3, NULL);
 	hash_insertar(nuevo_hash, texto4, &elemento4, NULL);
 	hash_insertar(nuevo_hash, texto5, &elemento5, NULL);
-	
+
+	pa2m_afirmar(hash_cantidad(nuevo_hash) == 5, "Luego de rehashear la cantidad de elemento es la correcta.");
+	pa2m_afirmar(*(int*)hash_obtener(nuevo_hash, texto) == elemento && *(int*)hash_obtener(nuevo_hash, texto) == elemento && 
+	*(int*)hash_obtener(nuevo_hash, texto2) == elemento2 && *(int*)hash_obtener(nuevo_hash, texto3) == elemento3 && 
+	*(int*)hash_obtener(nuevo_hash, texto4) == elemento4 && *(int*)hash_obtener(nuevo_hash, texto5) == elemento5, 
+	"Todos los elementos estan insertados correctamente.");
+
 	hash_destruir(nuevo_hash);
 }
 

@@ -93,6 +93,7 @@ hash_t* rehash(hash_t* hash)
 			hash_insertar(hash, nodo_actual->clave, nodo_actual->valor, NULL);
 			nodo_eliminar = nodo_actual;
 			nodo_actual = nodo_actual->siguiente;
+			free(nodo_eliminar->clave);
 			free(nodo_eliminar);
 		}
 	}
@@ -259,7 +260,6 @@ void hash_destruir_todo(hash_t *hash, void (*destructor)(void *))
 			free(aux);
 			aux = siguiente;
 		}
-		free(aux);
 		posicion++;
 	}
 	free(hash->vector);
