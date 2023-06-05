@@ -31,8 +31,8 @@ void pruebas_rehash()
 	hash_insertar(nuevo_hash, texto3, &elemento3, NULL);
 	hash_insertar(nuevo_hash, texto4, &elemento4, NULL);
 	hash_insertar(nuevo_hash, texto5, &elemento5, NULL);
-
-	hash_destruir_todo(nuevo_hash, free);
+	
+	hash_destruir_todo(nuevo_hash, NULL);
 }
 
 void pruebas_iterador()
@@ -63,7 +63,7 @@ void pruebas_iterador()
 	pa2m_afirmar(elemento1 == 11 && elemento2 == 12 && elemento3 == 13 && elemento4 == 14 && elemento5 == 15, 
 	"Se aplica correctamente la funcion pasada al iterador.");
 
-	hash_destruir_todo(nuevo_hash, free);
+	hash_destruir_todo(nuevo_hash, NULL);
 }
 
 void eliminacion_y_actualizacion()
@@ -87,7 +87,7 @@ void eliminacion_y_actualizacion()
 	pa2m_afirmar(*(int*)hash_quitar(nuevo_hash, texto) == elemento2, "Eliminar devuelve el elemento correcto.");
 	pa2m_afirmar(hash_quitar(nuevo_hash, texto) == NULL, "Eliminar una clave ya borrada devuelve NULL.");
 
-	hash_destruir_todo(nuevo_hash, free);
+	hash_destruir_todo(nuevo_hash, NULL);
 }
 
 void pruebas_de_insercion()
@@ -105,7 +105,7 @@ void pruebas_de_insercion()
 	pa2m_afirmar(*(int*)hash_quitar(nuevo_hash, texto) == elemento, "Eliminar un elemento devuelve el elemento correcto.");
 	pa2m_afirmar(hash_cantidad(nuevo_hash) == 0, "Luego de eliminar un elemento la cantidad es la correcta.");
 
-	hash_destruir_todo(nuevo_hash, free);
+	hash_destruir_todo(nuevo_hash, NULL);
 }
 
 void pruebas_creacion()
@@ -115,7 +115,7 @@ void pruebas_creacion()
 
 	pa2m_afirmar(hash_cantidad(nuevo_hash) == 0, "Un hash recien creado tiene cantidad cero.");
 
-	hash_destruir_todo(nuevo_hash, free);
+	hash_destruir_todo(nuevo_hash, NULL);
 }
 
 int main()

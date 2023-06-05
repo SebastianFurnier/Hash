@@ -69,27 +69,24 @@ nodo_t* crear_nodo(const char *clave, void *elemento)
 	return nuevo_nodo;
 }
 
-bool auxiliar_rehash(const char *clave, void *valor, void*aux)
+void insertar_par(hash_t* hash, nodo_t* nodo)
 {
-	hash_t* hash = (hash_t*)aux;
+	size_t posicion = funcion_hash(nodo->clave) % hash->capacidad;
 
-	size_t posicion = funcion_hash(clave) % hash->capacidad;
-
-	nodo_t* nuevo_nodo = crear_nodo(clave, valor);
-	nodo_t* nodo_actual = hash->vector[posicion];
-
-	if (!nuevo_nodo)
-		return false;
-
-	if (nodo_actual == NULL){
-		nodo_actual = nuevo_nodo;
-		return true;
+	if (hash->vector[posicion] == NULL){
+		hash->vector[posicion] = nodo;
+		return;
 	}
-	while (nodo_actual->siguiente != NULL){
-		nodo_actual = nodo_actual->siguiente;
+
+	nodo_t* nodo_aux = hash->vector[posicion];
+
+	while (nodo_aux->siguiente != NULL)
+	{
+		nodo_aux = nodo_aux->siguiente;
 	}
-	nodo_actual->siguiente = nuevo_nodo;
-	return true;
+	nodo_aux->siguiente = nodo;
+
+	return;
 }
   
 hash_t* rehash(hash_t* hash)
@@ -99,9 +96,20 @@ hash_t* rehash(hash_t* hash)
 	if (!hash_nuevo)
 		return NULL;
 
-	hash_con_cada_clave(hash, auxiliar_rehash, hash_nuevo);
+	size_t i = 0;
+	nodo_t* nodo_aux;
 
-	hash_destruir_todo(hash, free);
+	while (i < hash->capacidad)
+	{
+		nodo_aux = hash->vector[i];
+		while (nodo_aux != NULL)
+		{
+			insertar_par(hash_nuevo, nodo_aux);
+			nodo_aux = nodo_aux->siguiente;
+		}
+		i++;
+	}
+
 	return hash_nuevo;
 }
 
@@ -114,10 +122,8 @@ hash_t *hash_insertar(hash_t *hash, const char *clave, void *elemento,
 	float carga = (float)(hash->cantidad) / (float)(hash->capacidad);
 
 	if (carga > FACTOR_CARGA_MAXIMO)
-		hash = rehash(hash);
-	if (!hash)
-		return NULL;
-
+		rehash(hash);
+		
 	size_t posicion = funcion_hash(clave) % hash->capacidad;
 	nodo_t* nodo_actual = hash->vector[posicion];
 
@@ -230,13 +236,6 @@ bool hash_contiene(hash_t *hash, const char *clave)
 	return false;
 }
 
-size_t hash_capacidad(hash_t* hash)
-{
-	if (!hash)
-		return 0;
-	return hash->capacidad;
-}
-
 size_t hash_cantidad(hash_t *hash)
 {
 	if (!hash)
@@ -260,15 +259,17 @@ void hash_destruir_todo(hash_t *hash, void (*destructor)(void *))
 	nodo_t* aux;
 	nodo_t* siguiente;
 
-	while (posicion < hash->capacidad && destructor != NULL){
+	while (posicion < hash->capacidad){
 		aux = hash->vector[posicion];
 		while (aux!= NULL){
 			siguiente = aux->siguiente;
-			destructor(aux->clave);
-			destructor(aux);
+			if (destructor != NULL)
+				destructor(aux->valor);
+			free(aux->clave);
+			free(aux);
 			aux = siguiente;
 		}
-		destructor(aux);
+		free(aux);
 		posicion++;
 	}
 	free(hash->vector);
