@@ -12,18 +12,18 @@ bool modificar_vector(const char* clave, void* valor, void* aux)
 
 void pruebas_rehash()
 {
-	size_t capacidad = 4;
+	size_t capacidad = 5;
 	hash_t* nuevo_hash = hash_crear(capacidad);
 
 	char* texto = "prueba";
 	int elemento = 1;
-	char* texto2 = "prueba2";
+	char* texto2 = "prueba1";
 	int elemento2 = 2;
 	char* texto3 = "prueba2";
 	int elemento3 = 3;
-	char* texto4 = "prueba4";
+	char* texto4 = "prueba3";
 	int elemento4 = 4;
-	char* texto5 = "prueba5";
+	char* texto5 = "prueba4";
 	int elemento5 = 5;
 
 	hash_insertar(nuevo_hash, texto, &elemento, NULL);
@@ -32,7 +32,7 @@ void pruebas_rehash()
 	hash_insertar(nuevo_hash, texto4, &elemento4, NULL);
 	hash_insertar(nuevo_hash, texto5, &elemento5, NULL);
 	
-	hash_destruir_todo(nuevo_hash, NULL);
+	hash_destruir(nuevo_hash);
 }
 
 void pruebas_iterador()

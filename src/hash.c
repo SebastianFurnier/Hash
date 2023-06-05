@@ -7,19 +7,19 @@
 #define FACTOR_CARGA_MAXIMO 0.7
 #define TAMANIO_MINIMO 3
 
-struct hash
-{
-	size_t capacidad;
-	size_t cantidad;
-	void** vector;
-};
-
 typedef struct nodo
 {
 	char* clave;
 	void* valor;
 	struct nodo *siguiente;
 }nodo_t;
+
+struct hash
+{
+	size_t capacidad;
+	size_t cantidad;
+	nodo_t** vector;
+};
 
 size_t funcion_hash(const char *str)
 {
@@ -69,48 +69,35 @@ nodo_t* crear_nodo(const char *clave, void *elemento)
 	return nuevo_nodo;
 }
 
-void insertar_par(hash_t* hash, nodo_t* nodo)
-{
-	size_t posicion = funcion_hash(nodo->clave) % hash->capacidad;
-
-	if (hash->vector[posicion] == NULL){
-		hash->vector[posicion] = nodo;
-		return;
-	}
-
-	nodo_t* nodo_aux = hash->vector[posicion];
-
-	while (nodo_aux->siguiente != NULL)
-	{
-		nodo_aux = nodo_aux->siguiente;
-	}
-	nodo_aux->siguiente = nodo;
-
-	return;
-}
-  
 hash_t* rehash(hash_t* hash)
 {
-	hash_t* hash_nuevo = hash_crear(hash->capacidad*2);
+	nodo_t** vector_viejo = hash->vector;
+	size_t capacidad_vieja = hash->capacidad;
 	
-	if (!hash_nuevo)
+	hash->vector = calloc(1,sizeof(nodo_t*)*hash->capacidad*2);
+
+	if (!hash->vector)
 		return NULL;
 
-	size_t i = 0;
-	nodo_t* nodo_aux;
+	hash->capacidad = hash->capacidad*2;
+	hash->cantidad = 0;
 
-	while (i < hash->capacidad)
-	{
-		nodo_aux = hash->vector[i];
-		while (nodo_aux != NULL)
+	size_t i;
+	nodo_t* nodo_actual;
+	nodo_t* nodo_eliminar;
+
+	for (i=0; i<capacidad_vieja; i++){
+		nodo_actual = vector_viejo[i];
+		while (nodo_actual != NULL)
 		{
-			insertar_par(hash_nuevo, nodo_aux);
-			nodo_aux = nodo_aux->siguiente;
+			hash_insertar(hash, nodo_actual->clave, nodo_actual->valor, NULL);
+			nodo_eliminar = nodo_actual;
+			nodo_actual = nodo_actual->siguiente;
+			free(nodo_eliminar);
 		}
-		i++;
 	}
-
-	return hash_nuevo;
+	free(vector_viejo);
+	return hash;
 }
 
 hash_t *hash_insertar(hash_t *hash, const char *clave, void *elemento,
@@ -118,12 +105,14 @@ hash_t *hash_insertar(hash_t *hash, const char *clave, void *elemento,
 {
 	if (!hash || !clave)
 		return NULL;
-
+	
 	float carga = (float)(hash->cantidad) / (float)(hash->capacidad);
 
 	if (carga > FACTOR_CARGA_MAXIMO)
-		rehash(hash);
-		
+		hash = rehash(hash);
+	if (!hash)
+		return NULL;
+	
 	size_t posicion = funcion_hash(clave) % hash->capacidad;
 	nodo_t* nodo_actual = hash->vector[posicion];
 
@@ -156,6 +145,7 @@ hash_t *hash_insertar(hash_t *hash, const char *clave, void *elemento,
 
 	nodo_anterior->siguiente = nuevo_nodo;
 	hash->cantidad++;
+
 	return hash;
 }
 
