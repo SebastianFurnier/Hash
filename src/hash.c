@@ -200,7 +200,7 @@ void *hash_quitar(hash_t *hash, const char *clave)
 
 /*
 *Funcion auxiliar usada por hash_obtener y hash_contiene. Busca en el hash la clave pasada por el usuario
-y devuelve el nodo en el que se encuentra.*/
+*y devuelve el nodo en el que se encuentra.*/
 nodo_t *buscar_clave(nodo_t *nodo_actual, const char *clave)
 {
 	while (nodo_actual != NULL) {
