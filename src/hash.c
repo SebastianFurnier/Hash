@@ -76,7 +76,7 @@ nodo_t *crear_nodo(const char *clave, void *elemento)
 /*
 *Rehash recibe el hash con el que estamos trabajando, guarda un puntero al vector donde se alojan los pares
 *claves valor y crea un nuevo vector de el doble de tamaño al usado por el hash. Luego inserta los pares claves
-*valor en el nuevo vector y se lo asigna al hash. 
+*valor en el nuevo vector, se lo asigna al hash y destruye los nodos y el vector viejo. 
 */
 hash_t *rehash(hash_t *hash)
 {
