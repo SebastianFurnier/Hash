@@ -4,12 +4,20 @@ CC = gcc
 
 all: clean valgrind-alumno
 
+correr-valgrind:
+	valgrind $(VALGRIND_FLAGS) ./tp_hash
+
+correr:
+	./tp_hash
+
+compilar:
+	$(CC) $(CFLAGS) pruebas_alumno.c ./src/hash.c -o tp_hash
+
 valgrind-chanutron: pruebas_chanutron
 	valgrind $(VALGRIND_FLAGS) ./pruebas_chanutron
 
 pruebas_chanutron: src/*.c pruebas_chanutron.o
 	$(CC) $(CFLAGS) src/*.c pruebas_chanutron.o -o pruebas_chanutron
-
 
 valgrind-alumno: pruebas_alumno
 	valgrind $(VALGRIND_FLAGS) ./pruebas_alumno
