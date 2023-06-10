@@ -17,7 +17,9 @@ struct hash {
 	size_t cantidad;
 	nodo_t **vector;
 };
-
+/*
+*Esta funcion recibe un string y nos devuelve una clave numerica unica que caracteriza dicho string.
+*/
 size_t funcion_hash(const char *str)
 {
 	size_t hash = 5381;
@@ -46,6 +48,10 @@ hash_t *hash_crear(size_t capacidad)
 	return hash;
 }
 
+/*
+*Crear nodo es una funcion auxiliar usada por la primitiva hash_insertar.
+*Recibe la clave y el valor pasadas por el usuario y devuelve una estructura de tipo nodo_t
+*que luego sera insertada en el diccionario.*/
 nodo_t *crear_nodo(const char *clave, void *elemento)
 {
 	nodo_t *nuevo_nodo = malloc(sizeof(nodo_t));
@@ -67,6 +73,11 @@ nodo_t *crear_nodo(const char *clave, void *elemento)
 	return nuevo_nodo;
 }
 
+/*
+*Rehash recibe el hash con el que estamos trabajando, guarda un puntero al vector donde se alojan los pares
+*claves valor y crea un nuevo vector de el doble de tamaño al usado por el hash. Luego inserta los pares claves
+*valor en el nuevo vector y se lo asigna al hash. 
+*/
 hash_t *rehash(hash_t *hash)
 {
 	nodo_t **vector_viejo = hash->vector;
@@ -97,16 +108,6 @@ hash_t *rehash(hash_t *hash)
 	}
 	free(vector_viejo);
 	return hash;
-}
-
-nodo_t *buscar_clave(nodo_t *nodo_actual, const char *clave)
-{
-	while (nodo_actual != NULL) {
-		if (strcmp(nodo_actual->clave, clave) == 0)
-			return nodo_actual;
-		nodo_actual = nodo_actual->siguiente;
-	}
-	return NULL;
 }
 
 hash_t *hash_insertar(hash_t *hash, const char *clave, void *elemento,
@@ -197,6 +198,19 @@ void *hash_quitar(hash_t *hash, const char *clave)
 	return elemento_aux;
 }
 
+/*
+*Funcion auxiliar usada por hash_obtener y hash_contiene. Busca en el hash la clave pasada por el usuario
+y devuelve el nodo en el que se encuentra.*/
+nodo_t *buscar_clave(nodo_t *nodo_actual, const char *clave)
+{
+	while (nodo_actual != NULL) {
+		if (strcmp(nodo_actual->clave, clave) == 0)
+			return nodo_actual;
+		nodo_actual = nodo_actual->siguiente;
+	}
+	return NULL;
+}
+
 void *hash_obtener(hash_t *hash, const char *clave)
 {
 	if (!hash || !clave)
@@ -204,7 +218,7 @@ void *hash_obtener(hash_t *hash, const char *clave)
 
 	size_t posicion = funcion_hash(clave) % hash->capacidad;
 	nodo_t *nodo_actual = hash->vector[posicion];
-	
+
 	nodo_actual = buscar_clave(nodo_actual, clave);
 
 	if (!nodo_actual)
